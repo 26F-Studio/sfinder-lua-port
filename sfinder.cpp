@@ -10,40 +10,39 @@ extern "C" {
 
 static const char key = 0;
 
-static int start_jvm(lua_State *L) {
-  try {
-    if (!lua_isstring(L, 1)) {
-      throw std::runtime_error("invalid jar path");
-    }
-    const char *jar_path = lua_tostring(L, 1);
-    JavaVM *vm;
-    JNIEnv *env;
-    JavaVMInitArgs vm_args;
-    JavaVMOption options[1];
-    vm_args.version = JNI_VERSION_1_8;
-    vm_args.ignoreUnrecognized = JNI_FALSE;
-    vm_args.nOptions = sizeof(options) / sizeof(JavaVMOption);
-    vm_args.options = options;
-    std::string option = "-Djava.class.path=";
-    option += jar_path;
-    options[0].optionString = const_cast<char *>(option.c_str());
-    jint res = JNI_CreateJavaVM(&vm, (void **)&env, &vm_args);
-    if (res != JNI_OK) {
-      throw std::runtime_error("Failed to create Java VM");
-    }
-    lua_pushlightuserdata(L, (void *)&key);
-    lua_pushlightuserdata(L, (void *)vm);
-    lua_settable(L, LUA_REGISTRYINDEX);
-    return 0;
-  } catch (std::exception &e) {
-    lua_settop(L, 0);
-    lua_pushnil(L);
-    lua_pushstring(L, e.what());
-    return 2;
-  }
-}
-
 inline namespace {
+  static int start_jvm(lua_State *L) {
+    try {
+      if (!lua_isstring(L, 1)) {
+        throw std::runtime_error("invalid jar path");
+      }
+      const char *jar_path = lua_tostring(L, 1);
+      JavaVM *vm;
+      JNIEnv *env;
+      JavaVMInitArgs vm_args;
+      JavaVMOption options[1];
+      vm_args.version = JNI_VERSION_1_8;
+      vm_args.ignoreUnrecognized = JNI_FALSE;
+      vm_args.nOptions = sizeof(options) / sizeof(JavaVMOption);
+      vm_args.options = options;
+      std::string option = "-Djava.class.path=";
+      option += jar_path;
+      options[0].optionString = const_cast<char *>(option.c_str());
+      jint res = JNI_CreateJavaVM(&vm, (void **)&env, &vm_args);
+      if (res != JNI_OK) {
+        throw std::runtime_error("Failed to create Java VM");
+      }
+      lua_pushlightuserdata(L, (void *)&key);
+      lua_pushlightuserdata(L, (void *)vm);
+      lua_settable(L, LUA_REGISTRYINDEX);
+      return 0;
+    } catch (std::exception &e) {
+      lua_settop(L, 0);
+      lua_pushnil(L);
+      lua_pushstring(L, e.what());
+      return 2;
+    }
+  }
   JavaVM *get_jvm(lua_State *L) {
     JavaVM *vm;
     lua_pushlightuserdata(L, (void *)&key);
