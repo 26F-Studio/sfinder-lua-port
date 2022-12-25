@@ -81,12 +81,19 @@ inline namespace {
     return env;
   }
   int destroy_jvm(lua_State *L) {
-    JavaVM *vm = get_jvm(L);
-    vm->DestroyJavaVM();
-    lua_pushlightuserdata(L, (void *)&key);
-    lua_pushnil(L);
-    lua_settable(L, LUA_REGISTRYINDEX);
-    return 0;
+    try {
+      JavaVM *vm = get_jvm(L);
+      vm->DestroyJavaVM();
+      lua_pushlightuserdata(L, (void *)&key);
+      lua_pushnil(L);
+      lua_settable(L, LUA_REGISTRYINDEX);
+      return 0;
+    } catch (std::exception &e) {
+      lua_settop(L, 0);
+      lua_pushnil(L);
+      lua_pushstring(L, e.what());
+      return 2;
+    }
   }
 }
 
