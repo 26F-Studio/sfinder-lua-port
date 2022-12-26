@@ -34,9 +34,11 @@ jobs:
           make build/Linux/sfinder.so JAVA_HOME=jre
       - name: Test
         run: |
-          export LUA_CPATH=build/Linux/?.so
-          mkdir -p /lib/jvm
-          ln -s $PWD/jre /lib/jvm/jre
+          PREFIX=/usr/local/lib
+          sudo mkdir -p $PREFIX/jvm
+          sudo ln -s $PWD/jre $PREFIX/jvm/jre
+          sudo mkdir -p $PREFIX/lua/5.1
+          sudo ln -s $PWD/build/Linux/sfinder.so $PREFIX/lua/5.1/sfinder.so
           luajit test.lua solution-finder.jar
       - name: Create tarball
         run: |
