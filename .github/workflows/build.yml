@@ -25,7 +25,7 @@ jobs:
           ./gradlew jar
           mv build/libs/solution-finder-*.jar ../solution-finder.jar
       - name: Install libluajit-5.1-dev
-        run: sudo apt install libluajit-5.1-dev
+        run: sudo apt install libluajit-5.1-dev luajit
       - name: Build solution finder loader
         run: |
           jlink --add-modules java.base --output jre --no-man-pages --strip-debug --compress=2
