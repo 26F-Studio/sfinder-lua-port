@@ -31,25 +31,22 @@ jobs:
           jlink --add-modules java.base --output jre --no-man-pages --strip-debug --compress=2
           make build/Linux/sfinder.so JAVA_HOME=jre
           mv jre build/Linux/jre
+      - name: Create tarball
+        run: tar -caf Linux.tar.xz build/Linux
       - name: Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: Linux
-          path: build/Linux
+          name: Linux.tar.xz
+          path: Linux.tar.xz
       - name: Upload solution finder
         uses: actions/upload-artifact@v2
         with:
-          name: solution-finder
+          name: solution-finder.jar
           path: solution-finder.jar
-      - name: Pack build folder
-        if: startsWith(github.ref, 'refs/tags/')
-        shell: bash
-        run: |
-          7z a -tzip Linux.zip ./build/Linux/*
       - name: Create release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v1
         with:
           files: |
             solution-finder.jar
-            Linux.zip
+            Linux.tar.xz
