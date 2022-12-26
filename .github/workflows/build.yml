@@ -1,0 +1,45 @@
+name: Build solution finder
+
+on:
+  push:
+    branches: [main, ci*]
+    tags:
+      - '*'
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Install libluajit-5.1-dev
+        shell: bash
+        run: sudo apt install libluajit-5.1-dev
+      - name: Setup java
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: '8'
+          cache: gradle
+      - name: Build solution finder
+        run: cd solution-finder && ./gradlew jar
+      - name: Build solution finder loader
+        run:
+          make build/Linux/sfinder.so
+          mv solution-finder/build/libs/solution-finder-*.jar build/Linux/sfinder.jar
+      - name: Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Linux
+          path: build/Linux
+      - name: Pack build folder
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: bash
+        run: |
+          7z a -tzip Linux.zip ./build/Linux/*
+      - name: Create release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: Linux.zip
