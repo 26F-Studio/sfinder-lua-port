@@ -13,9 +13,6 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: true
-      - name: Install libluajit-5.1-dev
-        shell: bash
-        run: sudo apt install libluajit-5.1-dev
       - name: Setup java
         uses: actions/setup-java@v3
         with:
@@ -24,16 +21,29 @@ jobs:
           cache: gradle
       - name: Build solution finder
         run: |
-          cd solution-finder && ./gradlew jar
-          mv solution-finder/build/libs/solution-finder-*.jar solution-finder.jar
+          cd solution-finder
+          ./gradlew jar
+          mv build/libs/solution-finder.jar ../solution-finder.jar
       - name: Upload solution finder
         uses: actions/upload-artifact@v2
         with:
           name: solution-finder
           path: solution-finder.jar
+      - name: Install libluajit-5.1-dev
+        shell: bash
+        run: sudo apt install libluajit-5.1-dev
       - name: Build solution finder loader
         run: |
           make build/Linux/sfinder.so
+      - name: Setup JRE to bundle
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: '8'
+          java-package: jre
+          architecture: x64
+      - name: Bundle solution finder loader
+        run: cp -r $JAVA_HOME build/Linux/jre
       - name: Artifact
         uses: actions/upload-artifact@v3
         with:
