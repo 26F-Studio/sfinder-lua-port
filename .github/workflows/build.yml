@@ -34,10 +34,11 @@ jobs:
           make build/Linux/sfinder.so JAVA_HOME=jre
       - name: Test
         run: |
-          sudo mkdir -p /lib/jvm
-          sudo ln -s $PWD/jre /lib/jvm/jre
-          sudo mkdir -p /lib/lua/5.1
-          sudo ln -s $PWD/build/Linux/sfinder.so /lib/lua/5.1/sfinder.so
+          PREFIX=/usr/local/lib
+          sudo mkdir -p $PREFIX/jvm
+          sudo ln -s $PWD/jre $PREFIX/jvm/jre
+          sudo mkdir -p $PREFIX/lua/5.1
+          sudo ln -s $PWD/build/Linux/sfinder.so $PREFIX/lua/5.1/sfinder.so
           luajit test.lua solution-finder.jar
       - name: Create tarball
         run: |
