@@ -23,11 +23,17 @@ jobs:
           java-version: '8'
           cache: gradle
       - name: Build solution finder
-        run: cd solution-finder && ./gradlew jar
+        run: |
+          cd solution-finder && ./gradlew jar
+          mv solution-finder/build/libs/solution-finder-*.jar solution-finder.jar
+      - name: Upload solution finder
+        uses: actions/upload-artifact@v2
+        with:
+          name: solution-finder
+          path: solution-finder.jar
       - name: Build solution finder loader
         run: |
           make build/Linux/sfinder.so
-          mv solution-finder/build/libs/solution-finder-*.jar build/Linux/sfinder.jar
       - name: Artifact
         uses: actions/upload-artifact@v3
         with:
