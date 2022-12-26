@@ -23,7 +23,7 @@ jobs:
         run: |
           cd solution-finder
           ./gradlew jar
-          mv build/libs/solution-finder.jar ../solution-finder.jar
+          mv build/libs/solution-finder-*.jar ../solution-finder.jar
       - name: Upload solution finder
         uses: actions/upload-artifact@v2
         with:
