@@ -25,7 +25,7 @@ jobs:
       - name: Build solution finder
         run: cd solution-finder && ./gradlew jar
       - name: Build solution finder loader
-        run:
+        run: |
           make build/Linux/sfinder.so
           mv solution-finder/build/libs/solution-finder-*.jar build/Linux/sfinder.jar
       - name: Artifact
