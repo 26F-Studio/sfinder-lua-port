@@ -17,38 +17,30 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: temurin
-          java-version: '8'
+          java-version: '11'
           cache: gradle
       - name: Build solution finder
         run: |
           cd solution-finder
           ./gradlew jar
           mv build/libs/solution-finder-*.jar ../solution-finder.jar
-      - name: Upload solution finder
-        uses: actions/upload-artifact@v2
-        with:
-          name: solution-finder
-          path: solution-finder.jar
       - name: Install libluajit-5.1-dev
-        shell: bash
         run: sudo apt install libluajit-5.1-dev
       - name: Build solution finder loader
         run: |
-          make build/Linux/sfinder.so
-      - name: Setup JRE to bundle
-        uses: actions/setup-java@v3
-        with:
-          distribution: temurin
-          java-version: '8'
-          java-package: jre
-          architecture: x64
-      - name: Bundle solution finder loader
-        run: cp -r $JAVA_HOME build/Linux/jre
+          jlink --add-modules java.base --output jre --no-man-pages --strip-debug --compress=2
+          make build/Linux/sfinder.so JAVA_HOME=jre
+          mv jre build/Linux/jre
       - name: Artifact
         uses: actions/upload-artifact@v3
         with:
           name: Linux
           path: build/Linux
+      - name: Upload solution finder
+        uses: actions/upload-artifact@v2
+        with:
+          name: solution-finder
+          path: solution-finder.jar
       - name: Pack build folder
         if: startsWith(github.ref, 'refs/tags/')
         shell: bash
@@ -58,4 +50,6 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v1
         with:
-          files: Linux.zip
+          files: |
+            solution-finder.jar
+            Linux.zip
