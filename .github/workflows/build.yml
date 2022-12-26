@@ -31,8 +31,15 @@ jobs:
           jlink --add-modules java.base --output jre --no-man-pages --strip-debug --compress=2
           make build/Linux/sfinder.so JAVA_HOME=jre
           mv jre build/Linux/jre
+      - name: Test
+        run: |
+          export LUA_CPATH=build/Linux/?.so
+          export LD_LIBRARY_PATH=build/Linux/jre/lib/server
+          luajit test.lua solution-finder.jar
       - name: Create tarball
-        run: tar -caf Linux.tar.xz build/Linux
+        run: |
+          cd build/Linux
+          tar -caf ../../Linux.tar.xz sfinder.so jre
       - name: Artifact
         uses: actions/upload-artifact@v3
         with:
