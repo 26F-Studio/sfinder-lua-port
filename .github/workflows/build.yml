@@ -32,14 +32,15 @@ jobs:
         run: |
           jlink --add-modules java.base --output jre --no-man-pages --strip-debug --compress=2
           make build/Linux/sfinder.so JAVA_HOME=jre
-          mv jre build/Linux/jre
       - name: Test
         run: |
           export LUA_CPATH=build/Linux/?.so
-          export LD_LIBRARY_PATH=build/Linux/jre/lib/server
+          mkdir -p /lib/jvm
+          ln -s $PWD/jre /lib/jvm/jre
           luajit test.lua solution-finder.jar
       - name: Create tarball
         run: |
+          mv jre build/Linux/jre
           cd build/Linux
           tar -caf ../../Linux.tar.xz sfinder.so jre
       - name: Artifact
