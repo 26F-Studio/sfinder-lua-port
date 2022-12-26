@@ -387,11 +387,12 @@ struct call {
 
 static luaL_Reg funcs[] = {
   {"start_jvm", start_jvm},
-  {"main", call<
-      "entry/EntryPointMain",
-      "main",
-      java_int(array<String>)
-    >::f},
+  // not sure whether it is invokable with only java.base
+  // {"main", call<
+  //     "entry/EntryPointMain",
+  //     "main",
+  //     java_int(array<String>)
+  //   >::f},
   {"percent", call<
       "entry/percent/PercentEntryPoint",
       "run_invoked",
