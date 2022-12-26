@@ -2,9 +2,11 @@ name: Build solution finder
 
 on:
   push:
-    branches: [main, ci*]
+    branches: [ci*]
     tags:
       - '*'
+  pull_request:
+    branches: [main]
 
 jobs:
   build-linux:
